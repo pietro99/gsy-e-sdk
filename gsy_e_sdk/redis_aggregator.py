@@ -20,7 +20,7 @@ from gsy_e_sdk.utils import (
     create_area_name_uuid_mapping_from_tree_info,
     get_name_from_area_name_uuid_mapping, log_trade_info,
     log_bid_offer_confirmation, log_deleted_bid_offer_confirmation)
-
+import b4p
 
 class RedisAggregatorAPIException(Exception):
     """Exception that is raised in the RedisAggregator."""
@@ -32,7 +32,7 @@ class RedisAggregator:
     # pylint: disable = too-many-instance-attributes
     def __init__(self, aggregator_name, accept_all_devices=True,
                  redis_url=LOCAL_REDIS_URL):
-
+        b4p.init()
         self.grid_fee_calculation = GridFeeCalculation()
         self.redis_db = Redis.from_url(redis_url)
         self.pubsub = self.redis_db.pubsub()
