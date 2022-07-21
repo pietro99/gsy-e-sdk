@@ -41,6 +41,8 @@ class Oracle(Aggregator):
         self.execute_batch_commands()
 
     def on_tick(self, tick_info):
+        print('\n\nTESTING\n\n')
+        print(b4p)
         """Place a bid or an offer each 10% of the market slot progression."""
         rate_index = int(float(tick_info["slot_completion"].strip("%")) /
                          TICK_DISPATCH_FREQUENCY_PERCENT)

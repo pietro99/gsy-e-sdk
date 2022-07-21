@@ -1,0 +1,9 @@
+*.pyc
+/python_env
+/__pycache__
+/build
+/b4p.egg-info
+/.ipynb_checkpoints
+.ipynb_checkpoints/*.ipynb
+b4p/__pycache__
+

@@ -5,8 +5,11 @@ Template file for a trading strategy through the gsy-e-sdk api client using Redi
 from time import sleep
 from typing import List, Dict
 from gsy_e_sdk.redis_aggregator import RedisAggregator
+from gsy_e_sdk.redis_bc_aggregator import RedisBCAggregator
 from gsy_e_sdk.clients.redis_asset_client import RedisAssetClient
-
+import b4p 
+if not b4p.started():
+    b4p.init()
 ORACLE_NAME = "oracle"
 
 # List of assets' names to be connected with the API
@@ -18,7 +21,7 @@ STORAGE_NAMES = ["Tesla Powerwall 3"]
 TICK_DISPATCH_FREQUENCY_PERCENT = 10
 
 
-class Oracle(RedisAggregator):
+class Oracle(RedisBCAggregator):
     """Class that defines the behaviour of an "oracle" aggregator."""
 
     def __init__(self, *args, **kwargs):
@@ -30,8 +33,9 @@ class Oracle(RedisAggregator):
         """Place a bid or an offer whenever a new market is created."""
         if self.is_finished is True:
             return
+        self.post_bid_offer()        
         self.build_strategies(market_info)
-        self.post_bid_offer()
+
 
     def on_tick(self, tick_info):
         """Place a bid or an offer each 10% of the market slot progression."""
@@ -178,9 +182,15 @@ def register_asset_list(asset_names: List, asset_params: Dict, asset_uuid_map: D
         print("Registered asset:", asset_name)
         asset_params["area_id"] = asset_name
         asset = RedisAssetClient(**asset_params)
+        print(asset)
         asset_uuid_map[asset.area_uuid] = asset.area_id
         asset.select_aggregator(aggregator.aggregator_uuid)
+        market = b4p.Markets.new(asset.area_id, 'admin')
+        print(market)
     return asset_uuid_map
+
+
+
 
 
 print()
