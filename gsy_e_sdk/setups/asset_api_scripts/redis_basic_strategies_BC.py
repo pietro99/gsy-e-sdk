@@ -10,8 +10,8 @@ from gsy_e_sdk.clients.redis_asset_client import RedisAssetClient
 ORACLE_NAME = "oracle"
 
 # List of assets' names to be connected with the API
-LOAD_NAMES = ["Load 5 L9"]
-PV_NAMES = ["PV 5 (10kW)"]
+LOAD_NAMES = ["Load 5 L9", "Load 6 L9"]
+PV_NAMES = ["PV 5 (10kW)", "PV 6 (10kW)"]
 STORAGE_NAMES = []
 
 # Frequency of bids/offers posting in a market slot - to leave as it is
