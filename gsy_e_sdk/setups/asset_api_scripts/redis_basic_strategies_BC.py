@@ -10,11 +10,11 @@ from gsy_e_sdk.clients.redis_asset_client import RedisAssetClient
 ORACLE_NAME = "oracle"
 
 # List of assets' names to be connected with the API
-LOAD_NAMES = ["Load 5 L9", "Load 6 L9"]
-PV_NAMES = ["PV 5 (10kW)", "PV 6 (10kW)"]
+LOAD_NAMES = ["Load 5 L9"]
+PV_NAMES = ["PV 5 (10kW)"]
 STORAGE_NAMES = []
 
-# Frequency of bids/offers posting in a market slot - to leave as it is
+# # Frequency of bids/offers posting in a market slot - to leave as it is
 TICK_DISPATCH_FREQUENCY_PERCENT = 10
 
 
@@ -171,26 +171,34 @@ class Oracle(RedisAggregator):
         self.is_finished = True
 
 
-aggregator = Oracle(aggregator_name=ORACLE_NAME)
-asset_args = {"autoregister": True, "pubsub_thread": aggregator.pubsub}
 
-
-def register_asset_list(asset_names: List, asset_params: Dict, asset_uuid_map: Dict) -> Dict:
+def register_asset_list(asset_names: List, asset_params: Dict, asset_uuid_map: Dict, aggregator:Oracle) -> Dict:
     """Register the provided list of assets with the aggregator."""
     for asset_name in asset_names:
         print("Registered asset:", asset_name)
         asset_params["area_id"] = asset_name
+        print("redis asset client")
         asset = RedisAssetClient(**asset_params)
-        asset_uuid_map[asset.area_uuid] = asset.area_id
-        asset.select_aggregator(aggregator.aggregator_uuid)
-    return asset_uuid_map
+        print("redis asset client - done")
 
+        print("ASSET",asset)
+
+        asset_uuid_map[asset.area_uuid] = asset.area_id
+        print("selecting aggregator")
+
+        asset.select_aggregator(aggregator.aggregator_uuid)
+        print("aggregator selected")
+
+    return asset_uuid_map
+# print("ok")
+aggregator = Oracle(aggregator_name=ORACLE_NAME)
+asset_args = {"autoregister": True, "pubsub_thread": aggregator.pubsub, 'is_blocking':True}
 
 print()
 print("Registering assets ...")
 asset_uuid_mapping = {}
 asset_uuid_mapping = register_asset_list(LOAD_NAMES + PV_NAMES + STORAGE_NAMES,
-                                         asset_args, asset_uuid_mapping)
+                                         asset_args, asset_uuid_mapping, aggregator)
 print()
 print("Summary of assets registered:")
 print()
